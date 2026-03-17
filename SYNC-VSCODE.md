@@ -10,3 +10,10 @@
 create mode 100644 [FILE NAMES]
 8) Type and enter `git remote add origin https://github.com/[REPO FILE PATH]`
 10) Type and enter `git remote -v` should verify a link for fetch and a link for push
+
+To save and commit changes to GitHub:
+
+OPTIONAL STEP  0: See status changes with `git status`
+1) Type `git add .`
+2) Type `git commit -m "NAME TO SHOW IN COMMIT HISTORY"` (The name is public)
+3) Type `git push -u origin main`
