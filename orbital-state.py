@@ -41,3 +41,22 @@ class OrbitalState:
   def altitude(self):
     """Altitude above Earth surface (m)."""
     return self.a - R_E
+
+  @property
+  def raan_dot_j2(self):
+    """Secular J2 RAAN precession rate (rad/s)."""
+    return -1.5 * self.n * J2 * (R_E / self.p)**2 * np.cos(self.i)
+  
+  # Turns into a raw numpy array. The ODE integrator needs this
+  def to_vector(self):
+    """Return state as numpy array (a, e, i, raan, omega, u)."""
+    return np.array([self.a, self.e, self.i, self.raan, self.omega, self.u])
+  
+  @classmethod
+  def from_vector(cls, vec, epoch=0.0):
+    """Create OrbitalState from numpy array (a, e, i, raan, omega, u)."""
+    return cls(a=vec[0], e=vec[1], i=vec[2], raan=vec[3], omega=vec[4], u=vec[5], epoch=epoch)
+  
+  def copy(self):
+    """Return a copy of the current state."""
+    return OrbitalState(self.a, self.e, self.i, self.raan, self.omega, self.u, self.epoch)
