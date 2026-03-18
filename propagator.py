@@ -122,12 +122,12 @@ if __name__ == "__main__":
     analytical = np.degrees(state.raan_dot_j2) * 30 * DAY_TO_SEC
 
     print(f"\n30-day RAAN drift:")
-    print(f"  Numerical (GVE):     {numerical:.6f} deg")
-    print(f"  Analytical (secular): {analytical:.6f} deg")
-    print(f"  Difference:          {abs(numerical - analytical):.8f} deg")
+    print(f"Numerical (GVE): {numerical:.6f} deg")
+    print(f"Analytical (secular): {analytical:.6f} deg")
+    print(f"Difference: {abs(numerical - analytical):.8f} deg")
 
     # Check for 0 change in a, e, i
     print(f"\nChecks for 0 thrust propagation:")
-    print(f"  Delta-a: {(final.a - state.a)/1e3:.6f} km (should be ~0)")
-    print(f"  Delta-e: {final.e - state.e:.8f} (should be ~0)")
-    print(f"  Delta-i: {np.degrees(final.i - state.i):.8f} deg (should be ~0)")
+    print(f"Delta-a: {(final.a - state.a)/1e3:.6f} km")
+    print(f"Delta-e: {final.e - state.e:.8f}")
+    print(f"Delta-i: {np.degrees(final.i - state.i):.8f} deg")

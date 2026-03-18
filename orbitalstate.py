@@ -28,7 +28,7 @@ class OrbitalState:
     return self.a * (1 - self.e**2)
 
   @property
-  def p(self):
+  def h(self):
     """Specific angular momentum (m^2/s)."""
     return np.sqrt(MU * self.p)  
 
