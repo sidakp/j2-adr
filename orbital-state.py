@@ -20,7 +20,7 @@ class OrbitalState:
   @property
   def period(self):
     """Orbital period (s)."""
-    return np.sqrt(MU / self.a**3)
+    return 2 * np.pi / self.n
     
   @property
   def p(self):
@@ -28,11 +28,16 @@ class OrbitalState:
     return self.a * (1 - self.e**2)
 
   @property
+  def p(self):
+    """Specific angular momentum (m^2/s)."""
+    return np.sqrt(MU * self.p)  
+
+  @property
   def v_circular(self):
     """Circular orbital velocity (m/s)"""
-    return np.sqrt(MU / self.a**3)
+    return np.sqrt(MU / self.a)
 
   @property
   def altitude(self):
-    """Altitude above Earth surface."""
-    return np.sqrt(MU / self.a**3)
+    """Altitude above Earth surface (m)."""
+    return self.a - R_E
