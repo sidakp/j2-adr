@@ -1,6 +1,6 @@
 import numpy as np
 # Pull conversion factors from constants.py
-from constants import MU, R_E, J2, RAD_2_DEG, DAY_TO_SEC
+from constants import MU, R_E, J2, RAD_TO_DEG, DAY_TO_SEC
 
 class OrbitalState:
   def __init__(self, a, e, i, raan, omega, u, epoch=0.0):
