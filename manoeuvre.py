@@ -73,7 +73,7 @@ def compute_leg_dv(a_mothership, i_mothership, a_drift, i_drift, a_target,
     dv_inc_to_target = pure_inclination_dv(v_at_target, i_target - i_drift)
 
     # Residual RAAN - This is the cost of the RAAN gap the J2 drift didn't close
-    dv_residual = pure_raan__change_dv(v_at_target, delta_raan_residual, i_target)
+    dv_residual = pure_raan_change_dv(v_at_target, delta_raan_residual, i_target)
 
     total = (dv_hohmann_up + dv_inc_to_drift + dv_hohmann_down + dv_inc_to_target + dv_residual)
 
