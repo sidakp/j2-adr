@@ -34,7 +34,7 @@ def hohmann_transfer_time(r1, r2):
 # Potentially including in the report to justify the use of J2 perturbations
 def pure_inclination_dv(v_circular, delta_i):
     """Calculate the delta-V for a pure inclination change at a node."""
-    return 2 * v_circular * np.sin(delta_i / 2)
+    return abs(2 * v_circular * np.sin(delta_i / 2))
 
 # Pure RAAN Change
 def pure_raan_change_dv(v_circular, delta_raan, inclination):
