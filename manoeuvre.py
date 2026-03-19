@@ -39,7 +39,7 @@ def pure_inclination_dv(v_circular, delta_i):
 # Pure RAAN Change
 def pure_raan_change_dv(v_circular, delta_raan, inclination):
     return abs(v_circular * delta_raan * np.sin(inclination))
---- 
+
 # Combined plane change (RAAN + inclination)
 def combined_plane_change_dv(v_circular, delta_i, delta_raan, inclination):
     """Calculate the delta-V for a combined plane cha    nge at a node."""
@@ -47,7 +47,7 @@ def combined_plane_change_dv(v_circular, delta_i, delta_raan, inclination):
     plane_change_angle = np.sqrt(delta_i**2 + (delta_raan * np.sin(inclination))**2)
     dv = abs(v_circular * plane_change_angle)
 
-    if abs (delta_i) > 1e-14
+    if abs (delta_i) > 1e-14:
         u_star = np.arctan2(delta_raan * np.sin(inclination), delta_i)
     else:
         u_star = np.pi / 2 if delta_raan > 0 else -np.pi / 2 
@@ -63,7 +63,7 @@ def compute_leg_dv(a_mothership, i_mothership, a_drift, i_drift, a_target,
     _, _, dv_hohmann_up = hohmann_delta_v(a_mothership, a_drift)
     # 2) Inclination change to drift value
     v_at_drift = np.sqrt(MU / a_drift)
-    dv_inc_to_drift = pure_inclination_dv(v_at_drift, i_drift - i_mothership
+    dv_inc_to_drift = pure_inclination_dv(v_at_drift, i_drift - i_mothership)
 
     # Hohmann transfer from drift to target                                      
     _, _, dv_hohmann_down = hohmann_delta_v(a_drift, a_target)
@@ -73,7 +73,7 @@ def compute_leg_dv(a_mothership, i_mothership, a_drift, i_drift, a_target,
     dv_inc_to_target = pure_inclination_dv(v_at_target, i_target - i_drift)
 
     # Residual RAAN - This is the cost of the RAAN gap the J2 drift didn't close
-    dv_residual = pure_raan_dv(v_at_target, delta_raan_residual, i_target)
+    dv_residual = pure_raan__change_dv(v_at_target, delta_raan_residual, i_target)
 
     total = (dv_hohmann_up + dv_inc_to_drift + dv_hohmann_down + dv_inc_to_target + dv_residual)
 
@@ -107,7 +107,7 @@ if __name__ == "__main__":
     delta_raan = np.radians(3.0)  # 3 degree RAAN gap
     delta_i = np.radians(0.2)     # 0.2 degree inclination difference
     
-    dv_raan = pure_raan_dv(v, delta_raan, np.radians(98.0))
+    dv_raan = pure_raan_change_dv(v, delta_raan, np.radians(98.0))
     dv_inc = pure_inclination_dv(v, delta_i)
     dv_combined, u_star = combined_plane_change_dv(v, delta_i, delta_raan, np.radians(98.0))
     
