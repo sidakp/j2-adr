@@ -7,7 +7,7 @@ from constants import MU, R_E, J2, DEG_TO_RAD, DAY_TO_SEC
 from orbitalstate import OrbitalState
 from transferleg import TransferLeg
 
-"""""
+"""
 1) Converts each row into an OrbitalState — the CSV stores angles in degrees and semi-major axis in km, while
 OrbitalState expects radians and metres
 
@@ -140,8 +140,8 @@ def run_mission(mission, targets):
         # Print progress
         print(f"Step {step}: -> {best['target']['name']} "
               f"(NORAD {best['target']['norad_id']})")
-        print(f"Delta-V: {dv_cost:.1f} m/s"
-              f"Drift: {best['result']['drift_time_days']:.0f} days"
+        print(f"  Delta-V: {dv_cost:.1f} m/s | "
+              f"Drift: {best['result']['drift_time_days']:.0f} days | "
               f"Spent: {mission['dv_spent']:.1f} / "
               f"{mission['dv_budget']:.1f} m/s")
 
