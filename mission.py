@@ -7,7 +7,7 @@ from constants import MU, R_E, J2, DEG_TO_RAD, DAY_TO_SEC
 from orbitalstate import OrbitalState
 from transferleg import TransferLeg
 
-"""
+""""
 1) Converts each row into an OrbitalState — the CSV stores angles in degrees and semi-major axis in km, while
 OrbitalState expects radians and metres
 
@@ -74,12 +74,12 @@ then uses the TransferLeg class to price out every possible next transfer. It re
 cheapest-first, so the greedy algorithm picks the top one.
 """
 
-def compute_all_costs(mothership, targets):
+def compute_all_costs(mothership, targets, time_penalty=0):
     """Compute the Delta-V cost to transfer from the mothership's current state to each target."""
     costs = []
 
     for target in targets:
-        leg = TransferLeg(mothership, target['state'])
+        leg = TransferLeg(mothership, target['state'], time_penalty=time_penalty)
         result = leg.optimise()
 
         if result['feasible']:
@@ -98,7 +98,7 @@ the fuel budget allows for the transfer, visit the target, update the mothership
 we're out of fuel or targets.
 """
 
-def run_mission(mission, targets):
+def run_mission(mission, targets, time_penalty=0):
     """Greedy sequencing loop: always picks the cheapest next target"""
     remaining = list(targets) # Creates a copy to preserve original
     step = 0
@@ -108,7 +108,7 @@ def run_mission(mission, targets):
     
     while remaining:
         # Compute costs to all remaining targets
-        ranked = compute_all_costs(mission['mothership'], remaining)
+        ranked = compute_all_costs(mission['mothership'], remaining, time_penalty)
 
         if not ranked:
             print("No feasible targets remain.")
@@ -140,8 +140,8 @@ def run_mission(mission, targets):
         # Print progress
         print(f"Step {step}: -> {best['target']['name']} "
               f"(NORAD {best['target']['norad_id']})")
-        print(f"  Delta-V: {dv_cost:.1f} m/s | "
-              f"Drift: {best['result']['drift_time_days']:.0f} days | "
+        print(f"Delta-V: {dv_cost:.1f} m/s |"
+              f"Drift: {best['result']['drift_time_days']:.0f} days |"
               f"Spent: {mission['dv_spent']:.1f} / "
               f"{mission['dv_budget']:.1f} m/s")
 
@@ -153,3 +153,17 @@ def run_mission(mission, targets):
           f"{mission['dv_budget'] - mission['dv_spent']:.1f} m/s remaining")
     
     return mission
+
+if __name__ == "__main__":
+    # Load targets from CSV
+    targets = load_debris_catalogue()
+
+    # Create mission with 500 m/s Delta-V budget
+    mission = create_mission(dv_budget=500.0)
+
+    print(f"Mothership: {mission['mothership'].altitude/1e3:.0f} km, "
+          f"i={np.degrees(mission['mothership'].i):.2f} deg, "
+          f"RAAN={np.degrees(mission['mothership'].raan):.2f} deg\n")
+
+    # Run the greedy sequencer
+    result = run_mission(mission, targets, time_penalty=0)
