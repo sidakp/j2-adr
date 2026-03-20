@@ -32,7 +32,7 @@ class TransferLeg:
     
     def _drift_inclination(self, a_drift, required_raan_rate):
         """What inclination makes the drift orbit precess at the required rate?"""
-        p_drift = a_drift
+        p_drift = a_drift  # Assumes circular orbit (e ≈ 0), where p = a
         n_drift = np.sqrt(MU / a_drift**3)
 
         cos_i = required_raan_rate / (-1.5 * n_drift * J2 * (R_E / p_drift)**2)

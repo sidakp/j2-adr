@@ -18,7 +18,7 @@ class GVEPropagator:
         a, e, i, raan, omega, u = y
 
         # Formulae
-        p = a * (1 - e**2) # Perigee
+        p = a * (1 - e**2) # Semi-latus rectum
         n = np.sqrt(MU / a**3) # Mean motion
         h = np.sqrt(MU * p) # Specific angular momentum 
         theta = u - omega  # True anomaly
