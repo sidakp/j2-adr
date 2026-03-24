@@ -42,12 +42,12 @@ def pure_raan_change_dv(v_circular, delta_raan, inclination):
 
 # Combined plane change (RAAN + inclination)
 def combined_plane_change_dv(v_circular, delta_i, delta_raan, inclination):
-    """Calculate the delta-V for a combined plane cha    nge at a node."""
+    """Calculate the delta-V for a combined plane change at a node."""
     # This is an approximation that assumes small angles. For larger angles, the geometry becomes more complex.
     plane_change_angle = np.sqrt(delta_i**2 + (delta_raan * np.sin(inclination))**2)
     dv = abs(v_circular * plane_change_angle)
 
-    if abs (delta_i) > 1e-14:
+    if abs(delta_i) > 1e-14:
         u_star = np.arctan2(delta_raan * np.sin(inclination), delta_i)
     else:
         u_star = np.pi / 2 if delta_raan > 0 else -np.pi / 2 

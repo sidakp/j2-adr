@@ -6,7 +6,7 @@ import numpy as np
 
 # Gravitational constant
 MU = 3.986004418e14  # m^3/s^2
-R_E = 6371e3  # m
+R_E = 6378.137e3  # m (WGS-84 equatorial radius)
 J2 = 1.08263e-3  # Dimensionless
 
 # Conversion Factors
