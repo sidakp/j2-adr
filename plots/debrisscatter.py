@@ -61,7 +61,6 @@ for source, colour in source_colours.items():
 
 ax.set_xlabel('Right Ascension of Ascending Node (°)')
 ax.set_ylabel('Altitude (km)')
-ax.set_title('SSO Debris Catalogue: Spatial Distribution')
 ax.set_xlim(-5, 365)
 ax.set_ylim(500, 800)
 ax.legend(loc='lower left', framealpha=0.9)
@@ -87,7 +86,6 @@ for source, colour in source_colours.items():
 
 ax2.set_xlabel('Inclination (°)')
 ax2.set_ylabel('Altitude (km)')
-ax2.set_title('SSO Debris Catalogue: Inclination vs Altitude')
 ax2.legend(loc='upper left', framealpha=0.9)
 ax2.grid(True, alpha=0.3, linestyle='--')
 
