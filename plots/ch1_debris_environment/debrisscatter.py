@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # ── Load data ──
-df = pd.read_csv("plots/debris-catalogue-full.csv")
+df = pd.read_csv("plots/ch1_debris_environment/debris-catalogue-full.csv")
 R_E = 6371.0  # km
 
 # Derived columns
@@ -67,7 +67,7 @@ ax.legend(loc='lower left', framealpha=0.9)
 ax.grid(True, alpha=0.3, linestyle='--')
 
 fig.tight_layout()
-fig.savefig('plots/images/debris_raan_vs_altitude.png', bbox_inches='tight')
+fig.savefig('plots/ch1_debris_environment/images/debris_raan_vs_altitude.png', bbox_inches='tight')
 print("Saved debris_raan_vs_altitude.png")
 
 # ── Figure: Inclination vs Altitude ──
@@ -90,7 +90,7 @@ ax2.legend(loc='upper left', framealpha=0.9)
 ax2.grid(True, alpha=0.3, linestyle='--')
 
 fig2.tight_layout()
-fig2.savefig('plots/images/debris_inc_vs_altitude.png', bbox_inches='tight')
+fig2.savefig('plots/ch1_debris_environment/images/debris_inc_vs_altitude.png', bbox_inches='tight')
 print("Saved debris_inc_vs_altitude.png")
 
 plt.show()
