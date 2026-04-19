@@ -78,9 +78,7 @@ def print_statistics(results):
     times = results['total_times']
     n = results['n_runs']
 
-    print(f"\n{'='*50}")
     print(f"Monte Carlo Results ({n} runs)")
-    print(f"{'='*50}")
 
     print(f"\nTargets removed:")
     print(f"  Mean:   {np.mean(removed):.1f}")
