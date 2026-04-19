@@ -58,35 +58,32 @@ def combined_plane_change_dv(v_circular, delta_i, delta_raan, inclination):
 
 def compute_leg_dv(a_mothership, i_mothership, a_drift, i_drift, a_target,
                    i_target, delta_raan_residual):
-    # The _, _, ignores the individual burns and just computes the total
-    # 1) Hohmann transfer to drift altitude
-    _, _, dv_hohmann_up = hohmann_delta_v(a_mothership, a_drift)
-    # 2) Inclination change to drift value
+    # Mothership: parking -> drift
+    _, _, dv_hohmann_to_drift = hohmann_delta_v(a_mothership, a_drift)
     v_at_drift = np.sqrt(MU / a_drift)
     dv_inc_to_drift = pure_inclination_dv(v_at_drift, i_drift - i_mothership)
 
-    # Hohmann transfer from drift to target                                      
-    _, _, dv_hohmann_down = hohmann_delta_v(a_drift, a_target)
+    # Mothership: drift -> parking (returns to its own orbit, not the target)
+    _, _, dv_hohmann_return = hohmann_delta_v(a_drift, a_mothership)
+    v_at_mothership = np.sqrt(MU / a_mothership)
+    dv_inc_return = pure_inclination_dv(v_at_mothership, i_mothership - i_drift)
 
-    # Inclination change from drift to target
+    # Residual RAAN gap the drift didn't close - priced at target altitude as a
+    # handoff cost (closed by the micro-satellite, not the mothership)
     v_at_target = np.sqrt(MU / a_target)
-    dv_inc_to_target = pure_inclination_dv(v_at_target, i_target - i_drift)
-
-    # Residual RAAN - This is the cost of the RAAN gap the J2 drift didn't close
     dv_residual = pure_raan_change_dv(v_at_target, delta_raan_residual, i_target)
 
-    total = (dv_hohmann_up + dv_inc_to_drift + dv_hohmann_down + dv_inc_to_target + dv_residual)
+    total = (dv_hohmann_to_drift + dv_inc_to_drift + dv_hohmann_return + dv_inc_return + dv_residual)
 
     breakdown = {
-        'hohmann_to_drift' : dv_hohmann_up,
+        'hohmann_to_drift' : dv_hohmann_to_drift,
         'inc_to_drift' : dv_inc_to_drift,
-        'hohmann_to_target' : dv_hohmann_down,
-        'inc_to_target' : dv_inc_to_target,
+        'hohmann_return' : dv_hohmann_return,
+        'inc_return' : dv_inc_return,
         'raan_residual' : dv_residual,
         'total' : total
     }
 
-    # The breakdown allows to see where the fuel is allocated
     return total, breakdown
 
 if __name__ == "__main__":
@@ -133,7 +130,7 @@ if __name__ == "__main__":
     
     print(f"Hohmann to drift:    {bd['hohmann_to_drift']:.2f} m/s")
     print(f"Inc to drift:        {bd['inc_to_drift']:.2f} m/s")
-    print(f"Hohmann to target:   {bd['hohmann_to_target']:.2f} m/s")
-    print(f"Inc to target:       {bd['inc_to_target']:.2f} m/s")
+    print(f"Hohmann return:      {bd['hohmann_return']:.2f} m/s")
+    print(f"Inc return:          {bd['inc_return']:.2f} m/s")
     print(f"RAAN residual:       {bd['raan_residual']:.2f} m/s")
     print(f"TOTAL:               {bd['total']:.2f} m/s")

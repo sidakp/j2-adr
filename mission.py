@@ -131,8 +131,8 @@ def run_mission(mission, targets, time_penalty=0):
         mission['visited'].append(best['target'])
         mission['log'].append(best['result'])
 
-        # Update mothership state to the target orbit
-        mission['mothership'] = best['target']['state'].copy()
+        # Mothership returns to its parking orbit after each leg, so its state
+        # is left unchanged across legs.
 
         # Remove from remaining
         remaining.remove(best['target'])

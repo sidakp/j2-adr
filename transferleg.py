@@ -171,8 +171,8 @@ if __name__ == "__main__":
         print(f"\n  Breakdown:")
         print(f"    Hohmann to drift:     {bd['hohmann_to_drift']:.2f} m/s")
         print(f"    Inc to drift:         {bd['inc_to_drift']:.2f} m/s")
-        print(f"    Hohmann to target:    {bd['hohmann_to_target']:.2f} m/s")
-        print(f"    Inc to target:        {bd['inc_to_target']:.2f} m/s")
+        print(f"    Hohmann return:       {bd['hohmann_return']:.2f} m/s")
+        print(f"    Inc return:           {bd['inc_return']:.2f} m/s")
         print(f"    RAAN residual:        {bd['raan_residual']:.2f} m/s")
     else:
         print("  No feasible solution found")
