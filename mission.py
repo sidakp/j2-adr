@@ -18,7 +18,7 @@ mean anomaly ≈ true anomaly, so u ≈ omega + M is a reasonable approximation.
 3) Return a list of OrbitalState objects alongside the debris names/IDs so we can track which is which
 """
 
-def load_debris_catalogue(csv_path="debris-catalogue.csv"):
+def load_debris_catalogue(csv_path="plots/ch1_debris_environment/debris-catalogue-full.csv"):
     """Load debris targets from CSV and convert to OrbitalState objects."""
     df = pd.read_csv(csv_path)
 
@@ -69,7 +69,7 @@ def create_mission(dv_budget, a=R_E + 680e3, e=0.0001, i_deg=98.0,
     }
 
 """
-The compute_all_costs function takes the mothership's current state and the list of unvisited targets,
+1) The compute_all_costs function takes the mothership's current state and the list of unvisited targets,
 then uses the TransferLeg class to price out every possible next transfer. It returns the results sorted
 cheapest-first, so the greedy algorithm picks the top one.
 """
@@ -93,9 +93,9 @@ def compute_all_costs(mothership, targets, time_penalty=0):
     return costs
 
 """ 
-The run_mission function ties everything together. It repeatedly finds the cheapest target, check if
+2) The run_mission function ties everything together. It repeatedly finds the cheapest target, check if
 the fuel budget allows for the transfer, visit the target, update the mothership, and repeat until
-we're out of fuel or targets.
+I'm out of fuel or targets.
 """
 
 def run_mission(mission, targets, time_penalty=0):
@@ -147,7 +147,7 @@ def run_mission(mission, targets, time_penalty=0):
 
     # Summary
     print(f"\n{'='*50}")
-    print(f"Mission complete: {len(mission['visited'])} targets removed")
+    print(f"Number of targets removed: {len(mission['visited'])}")
     print(f"Delta-V spent: {mission['dv_spent']:.1f} m/s")
     print(f"Budget remaining: "
           f"{mission['dv_budget'] - mission['dv_spent']:.1f} m/s remaining")
@@ -166,4 +166,4 @@ if __name__ == "__main__":
           f"RAAN={np.degrees(mission['mothership'].raan):.2f} deg\n")
 
     # Run the greedy sequencer
-    result = run_mission(mission, targets, time_penalty=0)
+    result = run_mission(mission, targets, time_penalty=2)

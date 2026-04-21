@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 
 # Load the CSV
-df = pd.read_csv("debris-catalogue.csv")
+df = pd.read_csv("plots/ch1_debris_environment/debris-catalogue-full.csv")
 
 print(f"Loaded {len(df)} debris objects\n")
 print(f"Columns available: {list(df.columns)}\n")
