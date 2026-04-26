@@ -131,8 +131,18 @@ def run_mission(mission, targets, time_penalty=0):
         mission['visited'].append(best['target'])
         mission['log'].append(best['result'])
 
-        # Mothership returns to its parking orbit after each leg, so its state
-        # is left unchanged across legs.
+        # Advance the catalogue by the committed drift duration. The
+        # mothership returns to the same parking-orbit shape after the
+        # leg, but that orbit has precessed under J2 while the leg was
+        # in progress; every unvisited target has also precessed at its
+        # own rate. Updating all of them preserves the true relative
+        # RAAN geometry when the next leg is priced.
+        leg_dt_s = best['result']['drift_time_days'] * DAY_TO_SEC
+        mission['mothership'].raan += (
+            mission['mothership'].raan_dot_j2 * leg_dt_s
+        )
+        for tgt in remaining:
+            tgt['state'].raan += tgt['state'].raan_dot_j2 * leg_dt_s
 
         # Remove from remaining
         remaining.remove(best['target'])
@@ -166,4 +176,4 @@ if __name__ == "__main__":
           f"RAAN={np.degrees(mission['mothership'].raan):.2f} deg\n")
 
     # Run the greedy sequencer
-    result = run_mission(mission, targets, time_penalty=2)
+    result = run_mission(mission, targets, time_penalty=0)

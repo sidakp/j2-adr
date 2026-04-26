@@ -139,17 +139,28 @@ if __name__ == "__main__":
           f"RAAN={np.degrees(debris.raan):.2f} deg")
     print(f"RAAN gap:   {np.degrees(debris.raan - mothership.raan):.2f} deg")
 
-    # What would a direct transfer cost (no J2 drift)?
-    from manoeuvre import combined_plane_change_dv, hohmann_delta_v
+    # Fair direct baseline (no J2):
+    # Match the J2-assisted leg's endpoint (mothership returns to its parking
+    # orbit). The direct equivalent is therefore two combined plane changes at
+    # the parking altitude: the first rotates the mothership onto the debris
+    # plane so that mothership and debris are momentarily coplanar, the second
+    # rotates it back to the original parking orientation. Altitude is not
+    # changed in either manoeuvre, because the J2 leg does not transit to the
+    # target's altitude either. Both manoeuvres are computed at parking-orbit
+    # velocity, and both have the same angular magnitude, so the total is
+    # simply twice the single-plane-change cost.
+    from manoeuvre import combined_plane_change_dv
     delta_i = debris.i - mothership.i
     delta_raan = debris.raan - mothership.raan
-    dv_direct_plane, _ = combined_plane_change_dv(
+    dv_one_plane_change, _ = combined_plane_change_dv(
         mothership.v_circular, delta_i, delta_raan, mothership.i
     )
-    _, _, dv_direct_hohmann = hohmann_delta_v(mothership.a, debris.a)
-    dv_direct = dv_direct_plane + dv_direct_hohmann
+    dv_direct = 2.0 * dv_one_plane_change
 
-    print(f"\nDirect transfer (no J2): {dv_direct:.2f} m/s")
+    print(f"\nDirect baseline (no J2, round-trip plane change): "
+          f"{dv_direct:.2f} m/s")
+    print(f"  Single plane change: {dv_one_plane_change:.2f} m/s "
+          f"(forward and reverse at parking altitude)")
 
     # Optimise the J2-enhanced transfer
     print(f"\nOptimising J2-enhanced transfer...")
