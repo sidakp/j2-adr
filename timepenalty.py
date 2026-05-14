@@ -23,7 +23,7 @@ expensive and collapse most legs onto direct transfers.
 the sweep; sweeping both budget and lambda is out of scope for this module.
 """
 
-LAMBDAS = [0.75, 1.00, 1.25, 1.50, 1.75, 2.00]
+LAMBDAS = [0.00, 0.05, 0.10, 0.25, 0.50, 0.75, 1.00, 1.25, 1.50, 1.75, 2.00]
 DV_BUDGET = 500.0
 
 """

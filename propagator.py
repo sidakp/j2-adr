@@ -1,12 +1,23 @@
 # Phase 1 - Orbital Propagator using J2 perturbation
 
 import numpy as np
-# ODE solver
 from scipy.integrate import solve_ivp
-# Import the constants defined in constants.py
 from constants import MU, R_E, J2, RAD_TO_DEG, DAY_TO_SEC
-# Import the class defined in orbitalstate.py
 from orbitalstate import OrbitalState
+
+"""
+1) GVEPropagator integrates Gauss's Variational Equations for the orbital
+elements (a, e, i, RAAN, omega, u). This is the full element-level model
+used to validate the secular J2 behaviour described in the dissertation.
+
+2) The thrust_func argument is optional. When it is not supplied, all thrust
+components are set to zero and the propagation reduces to the natural J2
+drift used to check the analytical RAAN precession rate.
+
+3) The __main__ block is a representative test case. It propagates a
+Sun-synchronous orbit for 30 days and compares the numerical RAAN drift
+against the analytical secular expression from OrbitalState.raan_dot_j2.
+"""
 
 class GVEPropagator:
     def __init__(self, rtol=1e-10, atol=1e-12, max_step=300):
@@ -17,14 +28,15 @@ class GVEPropagator:
     def _gve_rhs(self, t, y, thrust_func):
         a, e, i, raan, omega, u = y
 
-        # Formulae
+        # Common orbital quantities used by the GVE
         p = a * (1 - e**2) # Semi-latus rectum
         n = np.sqrt(MU / a**3) # Mean motion
         h = np.sqrt(MU * p) # Specific angular momentum 
         theta = u - omega  # True anomaly
         r = p / (1 + e * np.cos(theta))  # Radius
 
-        # Thrust accelerations. Should be 0
+        # Thrust accelerations in the LVLH frame. They are zero for the
+        # J2-only validation runs used in this dissertation.
         if thrust_func is not None:
             f_r, f_c, f_n = thrust_func(t, y)  # Radial, tangential, normal thrust components
         else:
@@ -72,8 +84,8 @@ class GVEPropagator:
 
         return np.array([da, de, di, draan, domega, du])
     
-    # Propagate method
     def propagate(self, initial_state, duration, thrust_func=None):
+        """Propagate an OrbitalState for the requested duration in seconds."""
         y0 = initial_state.to_vector()
 
         sol = solve_ivp(

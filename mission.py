@@ -1,5 +1,6 @@
 # Phase 3 + 4 - Mission Leg Optimisation
-# Greedy approach - Always picks the cheapest (Delta-V) next target
+# Greedy approach - Always picks the cheapest next target under the active
+# ranking metric. With time_penalty = 0 this reduces to pure Delta-V ranking.
 
 import numpy as np
 import pandas as pd
@@ -75,7 +76,7 @@ cheapest-first, so the greedy algorithm picks the top one.
 """
 
 def compute_all_costs(mothership, targets, time_penalty=0):
-    """Compute the Delta-V cost to transfer from the mothership's current state to each target."""
+    """Compute and rank the transfer cost from the current mothership state to each target."""
     costs = []
 
     for target in targets:
@@ -88,7 +89,9 @@ def compute_all_costs(mothership, targets, time_penalty=0):
                 'result': result
             })
 
-    costs.sort(key=lambda x: x['result']['total_dv']) # Sort by total Delta-V cost
+    '''Rank by the same composite cost used inside TransferLeg. When
+    time_penalty = 0 this is identical to sorting by pure delta-V. '''
+    costs.sort(key=lambda x: x['result']['ranked_cost'])
 
     return costs
 
@@ -114,7 +117,7 @@ def run_mission(mission, targets, time_penalty=0):
             print("No feasible targets remain.")
             break
 
-        # Greedy pick: cheapest first
+        # Greedy pick: cheapest first under the active ranking metric
         best = ranked[0]
         dv_cost = best['result']['total_dv']
         dv_remaining = mission['dv_budget'] - mission['dv_spent']
@@ -131,12 +134,13 @@ def run_mission(mission, targets, time_penalty=0):
         mission['visited'].append(best['target'])
         mission['log'].append(best['result'])
 
-        # Advance the catalogue by the committed drift duration. The
-        # mothership returns to the same parking-orbit shape after the
-        # leg, but that orbit has precessed under J2 while the leg was
-        # in progress; every unvisited target has also precessed at its
-        # own rate. Updating all of them preserves the true relative
-        # RAAN geometry when the next leg is priced.
+        '''Advance the catalogue by the committed drift duration. The
+        mothership returns to the same parking-orbit shape after the
+        leg, but that orbit has precessed under J2 while the leg was
+        in progress; every unvisited target has also precessed at its
+        own rate. Updating all of them preserves the true relative
+        RAAN geometry when the next leg is priced.
+        '''
         leg_dt_s = best['result']['drift_time_days'] * DAY_TO_SEC
         mission['mothership'].raan += (
             mission['mothership'].raan_dot_j2 * leg_dt_s

@@ -1,6 +1,16 @@
 import pandas as pd
 import numpy as np
 
+"""
+1) This script inspects the filtered Space-Track.org debris catalogue used by
+the mission sequencer. It is not an optimiser, but it verifies the columns
+and orbital-element ranges before the catalogue is passed into mission.py.
+
+2) The output is a quick sanity check for the dataset used in the dissertation:
+object count, available columns, sample rows, and basic statistics for the
+altitude, inclination, RAAN, eccentricity, RCS size, and country fields.
+"""
+
 # Load the CSV
 df = pd.read_csv("plots/ch1_debris_environment/debris-catalogue-full.csv")
 

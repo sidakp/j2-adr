@@ -1,8 +1,23 @@
-# Parsing Delta-V calculations here
-# Equations to show fuel cost to perform orbital manoeuvres
+# Manoeuvre cost models
+# Equations used to price the impulsive burns in each transfer leg.
 
 import numpy as np
 from constants import MU, R_E, J2
+
+"""
+1) This module contains the analytical Delta-V formulae used in the report:
+Hohmann transfer, pure inclination change, pure RAAN change, combined plane
+change, and the assembled parking-drift-parking transfer leg.
+
+2) The functions assume circular or near-circular orbits and impulsive burns.
+Those assumptions match the scope stated in the dissertation and keep the
+mission-level optimiser focused on cross-plane RAAN alignment rather than
+full rendezvous dynamics.
+
+3) compute_leg_dv is the function called by transferleg.py. It prices the
+mothership moving from parking to a drift orbit, waiting for J2 to close the
+RAAN gap, and returning to the parking-orbit shape.
+"""
 
 def hohmann_delta_v(r1, r2):
     """Calculate the delta-V for a Hohmann transfer between two circular orbits."""
@@ -30,17 +45,32 @@ def hohmann_transfer_time(r1, r2):
     period_transfer = 2 * np.pi * np.sqrt(a_transfer**3 / MU)
     return period_transfer / 2  # Time to go from r1 to r2 is half the period of the transfer orbit
 
-# Pure Inclination Change - I am defining pure here as a change in inclination using a single burn at a node.
-# Potentially including in the report to justify the use of J2 perturbations
+"""
+1) A pure inclination change is modelled as a single impulsive rotation of
+the velocity vector at a node. This is the inclination correction used when
+the mothership enters and exits the selected drift orbit.
+"""
+
 def pure_inclination_dv(v_circular, delta_i):
     """Calculate the delta-V for a pure inclination change at a node."""
     return abs(2 * v_circular * np.sin(delta_i / 2))
 
-# Pure RAAN Change
+"""
+1) A pure RAAN change is expensive in near-polar orbit because the burn has
+to rotate the orbital plane about Earth's polar axis. The report uses this
+function to show why passive J2 drift is preferable to impulsive RAAN
+correction.
+"""
+
 def pure_raan_change_dv(v_circular, delta_raan, inclination):
     return abs(v_circular * delta_raan * np.sin(inclination))
 
-# Combined plane change (RAAN + inclination)
+"""
+1) The combined plane-change formula prices a single burn that changes RAAN
+and inclination together under the small-angle circular-orbit approximation.
+It is used for the direct no-J2 baseline comparison.
+"""
+
 def combined_plane_change_dv(v_circular, delta_i, delta_raan, inclination):
     """Calculate the delta-V for a combined plane change at a node."""
     # This is an approximation that assumes small angles. For larger angles, the geometry becomes more complex.
@@ -58,6 +88,7 @@ def combined_plane_change_dv(v_circular, delta_i, delta_raan, inclination):
 
 def compute_leg_dv(a_mothership, i_mothership, a_drift, i_drift, a_target,
                    i_target, delta_raan_residual):
+    """Compute the full parking-drift-parking leg cost and return a breakdown."""
     # Mothership: parking -> drift
     _, _, dv_hohmann_to_drift = hohmann_delta_v(a_mothership, a_drift)
     v_at_drift = np.sqrt(MU / a_drift)
@@ -68,8 +99,9 @@ def compute_leg_dv(a_mothership, i_mothership, a_drift, i_drift, a_target,
     v_at_mothership = np.sqrt(MU / a_mothership)
     dv_inc_return = pure_inclination_dv(v_at_mothership, i_mothership - i_drift)
 
-    # Residual RAAN gap the drift didn't close - priced at target altitude as a
-    # handoff cost (closed by the micro-satellite, not the mothership)
+    # Residual RAAN term is retained for completeness. In the nominal
+    # optimiser this is zero because transferleg.py solves the drift rate
+    # required to close the RAAN gap exactly.
     v_at_target = np.sqrt(MU / a_target)
     dv_residual = pure_raan_change_dv(v_at_target, delta_raan_residual, i_target)
 
